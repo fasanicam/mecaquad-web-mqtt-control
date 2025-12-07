@@ -29,7 +29,7 @@ function Dashboard() {
 
     // Order: LocalStorage > Env > Default (School)
     const storedBroker = localStorage.getItem('brokerUrl');
-    const brokerUrl = storedBroker || process.env.NEXT_PUBLIC_MQTT_URL || 'wss://mqtt.dev.icam.school:9001/mqtt';
+    const brokerUrl = storedBroker || process.env.NEXT_PUBLIC_MQTT_URL || 'wss://mqtt.dev.icam.school/mqtt';
 
     const username = process.env.NEXT_PUBLIC_MQTT_USERNAME;
     const password = process.env.NEXT_PUBLIC_MQTT_PASSWORD;

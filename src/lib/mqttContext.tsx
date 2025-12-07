@@ -31,8 +31,11 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
     const [lastMessage, setLastMessage] = useState<{ topic: string; payload: string } | null>(null);
     const clientRef = useRef<MqttClient | null>(null);
 
-    const connect = (brokerUrl: string, options?: any) => {
-        if (clientRef.current?.connected) return;
+    const connect = useCallback((brokerUrl: string, options?: any) => {
+        if (clientRef.current?.connected || status === 'connected' || status === 'connecting') {
+            console.log('MQTT Client already connected or connecting');
+            return;
+        }
 
         setStatus('connecting');
         const mqttOptions = {
@@ -67,30 +70,30 @@ export const MqttProvider = ({ children }: { children: ReactNode }) => {
         newClient.on('message', (topic, message) => {
             setLastMessage({ topic, payload: message.toString() });
         });
-    };
+    }, [status]);
 
-    const disconnect = () => {
+    const disconnect = useCallback(() => {
         if (clientRef.current) {
             clientRef.current.end();
             clientRef.current = null;
             setClient(null);
             setStatus('disconnected');
         }
-    };
+    }, []);
 
-    const publish = (topic: string, message: string) => {
+    const publish = useCallback((topic: string, message: string) => {
         if (clientRef.current?.connected) {
             clientRef.current.publish(topic, message);
         } else {
             console.warn('MQTT not connected, cannot publish');
         }
-    };
+    }, [])
 
-    const subscribe = (topic: string) => {
+    const subscribe = useCallback((topic: string) => {
         if (clientRef.current?.connected) {
             clientRef.current.subscribe(topic);
         }
-    };
+    }, [])
 
     return (
         <MqttContext.Provider value={{ client, status, lastMessage, publish, subscribe, connect, disconnect }}>
