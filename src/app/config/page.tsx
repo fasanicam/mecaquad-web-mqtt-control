@@ -27,7 +27,7 @@ export default function ConfigPage() {
         e.preventDefault();
         if (nomVoiture.trim()) {
             localStorage.setItem('nomVoiture', nomVoiture.trim());
-            localStorage.setItem('brokerUrl', brokerUrl.trim() || 'wss://mqtt.dev.icam.school:433/mqtt');
+            localStorage.setItem('brokerUrl', brokerUrl.trim() || 'wss://mqtt.dev.icam.school:443/mqtt');
             router.push('/');
         }
     };
@@ -87,7 +87,7 @@ export default function ConfigPage() {
                         <button
                             type="button"
                             onClick={() => {
-                                setBrokerUrl('wss://mqtt.dev.icam.school:433/mqtt');
+                                setBrokerUrl('wss://mqtt.dev.icam.school:443/mqtt');
                                 setNomVoiture('');
                                 localStorage.removeItem('brokerUrl');
                                 localStorage.removeItem('nomVoiture');

@@ -28,7 +28,14 @@ function Dashboard() {
     setNomVoiture(savedName);
 
     // Order: LocalStorage > Env > Default (School)
-    const storedBroker = localStorage.getItem('brokerUrl');
+    let storedBroker = localStorage.getItem('brokerUrl');
+
+    // Auto-fix: Correct port 433 to 443 if present
+    if (storedBroker && storedBroker.includes(':433/')) {
+      storedBroker = storedBroker.replace(':433/', ':443/');
+      localStorage.setItem('brokerUrl', storedBroker);
+    }
+
     const brokerUrl = storedBroker || process.env.NEXT_PUBLIC_MQTT_URL || 'wss://mqtt.dev.icam.school/mqtt';
 
     const username = process.env.NEXT_PUBLIC_MQTT_USERNAME;
