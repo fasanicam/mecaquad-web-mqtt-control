@@ -27,7 +27,7 @@ export default function ConfigPage() {
         e.preventDefault();
         if (nomVoiture.trim()) {
             localStorage.setItem('nomVoiture', nomVoiture.trim());
-            localStorage.setItem('brokerUrl', brokerUrl.trim() || 'wss://mqtt.dev.icam.school/mqtt');
+            localStorage.setItem('brokerUrl', brokerUrl.trim() || 'wss://mqtt.dev.icam.school:433/mqtt');
             router.push('/');
         }
     };
