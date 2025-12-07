@@ -21,8 +21,8 @@ Application de pilotage pour robot Mecanum (Raspberry Pi Pico W) via MQTT.
 
 1. **Cloner le projet**
    ```bash
-   git clone https://github.com/dfasani/fasapico.git
-   cd fasapico/examples/webapp/mecaquad_control
+   git clone https://github.com/fasanicam/mecaquad-web-mqtt-control.git
+   cd mecaquad-web-mqtt-control
    ```
 
 2. **Installer les dépendances**
@@ -31,36 +31,42 @@ Application de pilotage pour robot Mecanum (Raspberry Pi Pico W) via MQTT.
    ```
 
 3. **Configurer l'environnement**
-   Créez un fichier `.env.local` à la racine de `examples/webapp/mecaquad_control` :
+   Créez un fichier `.env.local` à la racine :
    ```env
    NEXT_PUBLIC_MQTT_URL=wss://mqtt.dev.icam.school:9001/mqtt
    NEXT_PUBLIC_MQTT_USERNAME=votre-user
    NEXT_PUBLIC_MQTT_PASSWORD=votre-pass
    ```
+   *Note : L'URL du broker peut aussi être configurée directement dans l'interface de l'application (via le bouton paramètres).*
 
 4. **Lancer en local**
    ```bash
    npm run dev
    ```
-   Accédez à `http://localhost:3000`.
+   Accédez à [http://localhost:3000](http://localhost:3000).
 
 ## 📦 Déploiement sur Vercel
 
 1. Poussez votre code sur GitHub.
 2. Importez le projet dans Vercel ("Add New Project").
-3. Sélectionnez le dossier racine : `examples/webapp/mecaquad_control`.
-4. Ajoutez les Variables d'Environnement dans la console Vercel :
-   - `NEXT_PUBLIC_MQTT_URL` (valeur par défaut: `wss://mqtt.dev.icam.school:9001/mqtt`)
-   - `NEXT_PUBLIC_MQTT_USERNAME`
-   - `NEXT_PUBLIC_MQTT_PASSWORD`
+3. Sélectionnez le dépôt `mecaquad-web-mqtt-control`.
+4. Ajoutez les Variables d'Environnement dans la console Vercel (si nécessaire, sinon elles peuvent être configurées côté client) :
+   - `NEXT_PUBLIC_MQTT_URL` (Défaut : `wss://mqtt.dev.icam.school:9001/mqtt`)
 5. Déployez ! 🚀
 
 ## 📡 Protocole MQTT
 
 **Topic Base** : `bzh/iot/voiture/[nomVoiture]/`
 
-| Topic   | Direction | Description |
-|OS|OS|OS|
-| `.../cmd` | Publier | Commandes : `avancer`, `reculer`, `stop`, JSON `{traingauche: val, traindroit: val}` |
-| `.../distance` | S'abonner | Valeur du capteur ultrason (cm) |
-| `.../status` | S'abonner | Statut du robot (Online/Offline) |
+| Topic | Direction | Description |
+|-------|-----------|-------------|
+| `.../cmd` | Publier | Commandes simples (ex: `avancer`, `stop`) ou JSON pour le différentiel (`{traingauche: val, traindroit: val}`). |
+| `.../distance` | S'abonner | Valeur du capteur ultrason (en cm ou brut). |
+| `.../status` | S'abonner | Statut de connexion du robot (ex: `Online`, `Offline`). |
+
+## 🕹️ Commandes Joystick supportées
+
+- `avancer`, `reculer`, `stop`
+- `glisser_gauche`, `glisser_droite`
+- `rotation_horaire`, `rotation_anti_horaire`
+- Diagonales : `diagonale_avant_gauche`, `diagonale_avant_droite`, `diagonale_arriere_gauche`, `diagonale_arriere_droite`
