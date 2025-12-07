@@ -14,7 +14,13 @@ export default function ConfigPage() {
 
     useEffect(() => {
         const savedName = localStorage.getItem('nomVoiture');
-        const savedUrl = localStorage.getItem('brokerUrl');
+        let savedUrl = localStorage.getItem('brokerUrl');
+
+        // Auto-fix: Correct port 433 to 443 if present
+        if (savedUrl && savedUrl.includes(':433/')) {
+            savedUrl = savedUrl.replace(':433/', ':443/');
+            localStorage.setItem('brokerUrl', savedUrl);
+        }
 
         if (savedName) setNomVoiture(savedName);
         // Default to ICAM broker
