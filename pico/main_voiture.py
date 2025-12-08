@@ -95,20 +95,63 @@ def map_value(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def controle_differentiel(gauche_raw, droite_raw):
-    # Mapping 0-65535 (Webapp) -> -100 à 100 (Voiture.py)
-    # Note: Si la webapp envoie 0-65535, c'est probablement juste 0-100% avant.
-    # Si on veut reculer, la webapp devrait envoyer du négatif ou un bouton inversion.
-    # Pour l'instant, on mappe 0-65535 en 0-100.
-    mg = map_value(gauche_raw, 0, 65535, 0, 100)
-    md = map_value(droite_raw, 0, 65535, 0, 100)
+    # Mapping -65535..65535 (Webapp) -> -100..100 (Voiture.py)
+    # On supporte le mode bidirectionnel complet
+    mg = map_value(gauche_raw, -65535, 65535, -100, 100)
+    md = map_value(droite_raw, -65535, 65535, -100, 100)
+    
+    # Sécurité bornes
+    mg = max(-100, min(100, mg))
+    md = max(-100, min(100, md))
     
     logging.info(f"ACTION: Differentiel G={mg:.1f} D={md:.1f}")
     try:
-        voiture.differentiel(mg, md)
+        if hasattr(voiture, 'differentiel'):
+             voiture.differentiel(mg, md)
+        else:
+             # Fallback si méthode 'differentiel' n'existe pas dans Voiture.py
+             # On tente un comportement basique tank
+             logging.warning("Pas de methode differentiel(), usage manuel moteurs")
+             # A implémenter selon la lib Voiture si besoin description
     except Exception as e:
         logging.error(f"Erreur Differentiel: {e}")
 
-# ... MQTT Callback reste identique, appelant ces fonctions ...
+def on_message_callback(topic, msg):
+    try:
+        topic_str = topic.decode()
+        msg_str = msg.decode()
+        # logging.debug(f"Reçu sur {topic_str}: {msg_str}")
+        
+        if topic_str.endswith("/cmd"):
+            # Check if JSON (Differential) or String (Simple Command)
+            if msg_str.strip().startswith("{"):
+                try:
+                    data = ujson.loads(msg_str)
+                    if 'traingauche' in data and 'traindroit' in data:
+                        g = float(data['traingauche'])
+                        d = float(data['traindroit'])
+                        controle_differentiel(g, d)
+                except Exception as e:
+                    logging.error(f"Erreur JSON: {e}")
+            else:
+                # Simple Commands
+                cmd = msg_str.strip()
+                if cmd == "avancer": avancer()
+                elif cmd == "reculer": reculer()
+                elif cmd == "stop": stop()
+                elif cmd == "gauche": gauche()
+                elif cmd == "droite": droite()
+                elif cmd == "rotation_horaire": rotation_horaire()
+                elif cmd == "rotation_anti_horaire": rotation_anti_horaire()
+                elif cmd == "diagonale_av_gauche": diagonale_av_gauche()
+                elif cmd == "diagonale_av_droite": diagonale_av_droite()
+                elif cmd == "diagonale_ar_gauche": diagonale_ar_gauche()
+                elif cmd == "diagonale_ar_droite": diagonale_ar_droite()
+                else:
+                    logging.warning(f"Commande inconnue: {cmd}")
+                    
+    except Exception as e:
+        logging.error(f"Erreur Callback: {e}")
 
 # --- Capteurs (Ultrason) ---
 # Pin definition à vérifier sur votre montage (ex: Pin 16 ou port Grove)
