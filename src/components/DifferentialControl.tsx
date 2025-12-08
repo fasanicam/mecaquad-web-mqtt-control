@@ -55,7 +55,7 @@ export default function DifferentialControl({ onUpdate, disabled }: Differential
                         style={{
                             writingMode: 'vertical-lr',
                             direction: 'rtl',
-                            appearance: 'slider-vertical' // standard approach helps some browsers
+                            appearance: 'slider-vertical' as any // standard approach helps some browsers
                         }}
                     />
                     <span className="text-xs text-white/50 font-mono select-none w-16 text-center">{leftSpeed}</span>
@@ -75,7 +75,7 @@ export default function DifferentialControl({ onUpdate, disabled }: Differential
                         style={{
                             writingMode: 'vertical-lr',
                             direction: 'rtl',
-                            appearance: 'slider-vertical'
+                            appearance: 'slider-vertical' as any
                         }}
                     />
                     <span className="text-xs text-white/50 font-mono select-none w-16 text-center">{rightSpeed}</span>
