@@ -23,7 +23,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 {/* Row 1 */}
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('diagonale_avant_gauche')}
+                    onClick={() => onCommand('diagonale_av_gauche')}
                     disabled={disabled}
                     title="Diagonale Avant Gauche"
                 >
@@ -39,7 +39,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 </button>
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('diagonale_avant_droite')}
+                    onClick={() => onCommand('diagonale_av_droite')}
                     disabled={disabled}
                     title="Diagonale Avant Droite"
                 >
@@ -49,7 +49,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 {/* Row 2 */}
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('glisser_gauche')}
+                    onClick={() => onCommand('gauche')}
                     disabled={disabled}
                     title="Glisser Gauche"
                 >
@@ -65,7 +65,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 </button>
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('glisser_droite')}
+                    onClick={() => onCommand('droite')}
                     disabled={disabled}
                     title="Glisser Droite"
                 >
@@ -75,7 +75,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 {/* Row 3 */}
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('diagonale_arriere_gauche')}
+                    onClick={() => onCommand('diagonale_ar_gauche')}
                     disabled={disabled}
                     title="Diagonale Arrière Gauche"
                 >
@@ -91,7 +91,7 @@ export default function Joystick({ onCommand, disabled }: JoystickProps) {
                 </button>
                 <button
                     className={btnClass}
-                    onClick={() => onCommand('diagonale_arriere_droite')}
+                    onClick={() => onCommand('diagonale_ar_droite')}
                     disabled={disabled}
                     title="Diagonale Arrière Droite"
                 >
