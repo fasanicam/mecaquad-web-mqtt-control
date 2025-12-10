@@ -8,6 +8,8 @@ import { MqttProvider, useMqtt } from '@/lib/mqttContext';
 import Joystick from '@/components/Joystick';
 
 import Telemetry from '@/components/Telemetry';
+import TrafficLogger, { LogMessage } from '@/components/TrafficLogger';
+import { Edit2 } from 'lucide-react'; // Add Edit2 import
 
 // Main Dashboard Component (Inner)
 function Dashboard() {
@@ -16,6 +18,7 @@ function Dashboard() {
   const [distance, setDistance] = useState<number | string>('--');
   const [vehicleStatus, setVehicleStatus] = useState<string>('Offline');
   const [lastCmd, setLastCmd] = useState<string>('');
+  const [logs, setLogs] = useState<LogMessage[]>([]); // Logger state
   const router = useRouter();
 
   // Load Config & Connect
@@ -53,6 +56,8 @@ function Dashboard() {
     if (status === 'connected' && nomVoiture) {
       subscribe(`bzh/iot/voiture/${nomVoiture}/distance`);
       subscribe(`bzh/iot/voiture/${nomVoiture}/status`);
+      // Optional: Subscribe to all voiture traffic for debugging (careful with volume)
+      // subscribe(`bzh/iot/voiture/${nomVoiture}/#`);
     }
   }, [status, nomVoiture, subscribe]);
 
@@ -67,6 +72,18 @@ function Dashboard() {
       } else if (topic.endsWith('/status')) {
         setVehicleStatus(payload);
       }
+
+      // Update Logs
+      setLogs(prev => [
+        ...prev.slice(-49), // Keep last 50
+        {
+          id: Date.now(),
+          timestamp: new Date().toLocaleTimeString(),
+          topic: topic,
+          payload: payload.toString(),
+          direction: 'RX'
+        }
+      ]);
     }
   }, [lastMessage, nomVoiture]);
 
@@ -79,6 +96,17 @@ function Dashboard() {
 
     // Quick local feedback (optional)
     // Audio or visual check could be added here
+    // Log TX
+    setLogs(prev => [
+      ...prev.slice(-49),
+      {
+        id: Date.now(),
+        timestamp: new Date().toLocaleTimeString(),
+        topic: topic,
+        payload: cmd,
+        direction: 'TX'
+      }
+    ]);
   };
 
 
@@ -97,7 +125,12 @@ function Dashboard() {
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               MecaQuad Control
             </h1>
-            <p className="text-xs text-white/50 font-mono">{nomVoiture}</p>
+            <p className="text-xs text-white/50 font-mono flex items-center gap-2">
+              {nomVoiture}
+              <Link href="/config" className="hover:text-white transition-colors">
+                <Edit2 size={12} />
+              </Link>
+            </p>
           </div>
         </div>
 
@@ -106,7 +139,7 @@ function Dashboard() {
           className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
           title="Configuration"
         >
-          <Settings size={24} />
+
         </Link>
       </header>
 
@@ -125,6 +158,11 @@ function Dashboard() {
         <div className="glass-panel p-6 rounded-3xl flex flex-col items-center justify-center">
           <h2 className="text-white/50 uppercase tracking-widest text-sm mb-6 w-full text-center">Directionnel</h2>
           <Joystick onCommand={sendCommand} disabled={status !== 'connected'} />
+        </div>
+
+        {/* Traffic Logger Section */}
+        <div className="flex flex-col">
+          <TrafficLogger logs={logs} onClear={() => setLogs([])} />
         </div>
 
 
