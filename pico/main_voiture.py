@@ -67,21 +67,21 @@ def on_message_callback(topic, msg):
 
  
 
-def publish_mqtt(topic, payload):
-    if mqtt_handler:
-        mqtt_handler.publish(topic, payload)
+
 
 
 def publish_distance(timer):
     try:
-        publish_mqtt(TOPIC_DISTANCE, distance_sensor.get_distance())
+        if mqtt_handler:
+            mqtt_handler.publish(TOPIC_DISTANCE, distance_sensor.get_distance())
     except Exception as e:
         error(f"Erreur lecture distance: {e}")
 
 
 # --- Statut Heartbeat ---
 def publier_statut(timer):
-    publish_mqtt(TOPIC_STATUS, "Online")
+    if mqtt_handler:
+        mqtt_handler.publish(TOPIC_STATUS, "Online")
 
 def network_check(timer):
     if mqtt_handler:
@@ -110,7 +110,7 @@ mqtt_handler = MqttHandler(
     broker=SERVER_BROKER,
     port=PORT_BROKER,
     client_id=f"pico_char_{NOM_GROUPE}",
-    topic_cmd=TOPIC_CMD if 'TOPIC_CMD' in globals() else None,
+    topic_cmd=TOPIC_CMD,
     callback=on_message_callback
 )
 
