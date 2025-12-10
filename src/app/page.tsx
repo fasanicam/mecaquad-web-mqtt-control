@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Settings, AlertTriangle, PlayCircle } from 'lucide-react';
 import { MqttProvider, useMqtt } from '@/lib/mqttContext';
 import Joystick from '@/components/Joystick';
-import DifferentialControl from '@/components/DifferentialControl';
+
 import Telemetry from '@/components/Telemetry';
 
 // Main Dashboard Component (Inner)
@@ -81,13 +81,7 @@ function Dashboard() {
     // Audio or visual check could be added here
   };
 
-  const sendDifferential = (left: number, right: number) => {
-    if (!nomVoiture) return;
-    const topic = `bzh/iot/voiture/${nomVoiture}/cmd`;
-    const payload = JSON.stringify({ traingauche: left, traindroit: right });
-    publish(topic, payload);
-    setLastCmd(`Diff: ${left}/${right}`);
-  };
+
 
   if (!nomVoiture) return <div className="text-white text-center mt-20">Chargement configuration...</div>;
 
@@ -125,20 +119,15 @@ function Dashboard() {
       />
 
       {/* Main Control Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
 
         {/* Joystick Section */}
-        <div className="lg:col-span-2 glass-panel p-6 rounded-3xl flex flex-col items-center justify-center">
+        <div className="glass-panel p-6 rounded-3xl flex flex-col items-center justify-center">
           <h2 className="text-white/50 uppercase tracking-widest text-sm mb-6 w-full text-center">Directionnel</h2>
           <Joystick onCommand={sendCommand} disabled={status !== 'connected'} />
         </div>
 
-        {/* Differential Section */}
-        <div className="glass-panel p-6 rounded-3xl flex flex-col items-center">
-          <h2 className="text-white/50 uppercase tracking-widest text-sm mb-6 w-full text-center">Différentiel</h2>
-          <DifferentialControl onUpdate={sendDifferential} disabled={status !== 'connected'} />
-        </div>
-      </div>
+
 
       {/* Emergency Stop (Big Footer Button for quick access? Or stuck to Joystick? Joystick has STOP) */}
       {/* User asked for "bouton STOP d’urgence (rouge)". Joystick has it. Maybe a big FAB or bottom bar? */}
