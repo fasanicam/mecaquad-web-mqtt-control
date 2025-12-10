@@ -2,29 +2,30 @@ from fasapico import *
 import time
 
 # --- Configuration Logging ---
-# --- Configuration Logging ---
 enable_logging_types(LOG_DEBUG)
 
 # --- Configuration du Projet ---
-# Tentative d'import depuis settings.py, sinon valeurs par defaut
+# Tentative d'import depuis secrets.py, sinon valeurs par defaut
 try:
-    from settings import WIFI_SSID, WIFI_PWD, SERVER_BROKER, PORT_BROKER, NOM_GROUPE
+    from secrets import ssid as WIFI_SSID, password as WIFI_PWD, mqtt_broker as SERVER_BROKER, mqtt_port as PORT_BROKER
+    try:
+        from secrets import nom_voiture as NOM_VOITURE
+    except ImportError:
+        NOM_VOITURE = "maVoiture"
 except ImportError:
     WIFI_SSID = "icam_iot"
     WIFI_PWD = "Summ3#C@mp2022"
     SERVER_BROKER = "mqtt.dev.icam.school"
     PORT_BROKER = 1883
-    NOM_GROUPE = "monGroupe"
+    NOM_VOITURE = "maVoiture"
 
 # --- Topics MQTT ---
-TOPIC_BASE = f"bzh/iot/voiture/{NOM_GROUPE}"
+TOPIC_BASE = f"bzh/iot/voiture/{NOM_VOITURE}"
 TOPIC_CMD = f"{TOPIC_BASE}/cmd"
 TOPIC_DISTANCE = f"{TOPIC_BASE}/distance"
 TOPIC_STATUS = f"{TOPIC_BASE}/status"
 
-# --- Variables globales ---
-# --- MqttHandler (remplace clientMQTT global) ---
-mqtt_handler = None
+client_mqtt = None
 
 
 
@@ -72,20 +73,17 @@ def on_message_callback(topic, msg):
 
 def publish_distance(timer):
     try:
-        if mqtt_handler:
-            mqtt_handler.publish(TOPIC_DISTANCE, distance_sensor.get_distance())
+        client_mqtt.publish(TOPIC_DISTANCE, distance_sensor.get_distance())
     except Exception as e:
         error(f"Erreur lecture distance: {e}")
 
 
 # --- Statut Heartbeat ---
 def publier_statut(timer):
-    if mqtt_handler:
-        mqtt_handler.publish(TOPIC_STATUS, "Online")
+    client_mqtt.publish(TOPIC_STATUS, "Online")
 
 def network_check(timer):
-    if mqtt_handler:
-        mqtt_handler.check_connection()
+    client_mqtt.check_connection()
 
 # --- Timers System ---
 # Lecture Capteurs: toutes les 500ms
@@ -105,11 +103,11 @@ voiture = Voiture(moteur_a, moteur_b, moteur_c, moteur_d)
 # Pin definition à vérifier sur votre montage (ex: Pin 16 ou port Grove)
 distance_sensor = GroveUltrasonicRanger(16)
 
-# Init MQTT Handler
-mqtt_handler = MqttHandler(
+# Init Client MQTT
+client_mqtt = ClientMQTT(
     broker=SERVER_BROKER,
     port=PORT_BROKER,
-    client_id=f"pico_char_{NOM_GROUPE}",
+    client_id=f"pico_{NOM_VOITURE}",
     topic_cmd=TOPIC_CMD,
     callback=on_message_callback
 )
@@ -122,10 +120,7 @@ network_check(None)
 # --- Boucle Principale ---
 while True:
     try:
-        if mqtt_handler:
-            mqtt_handler.check_msg()
-        else:
-            time.sleep(1)
+        client_mqtt.check_msg()
     except Exception as e:
         error(f"Erreur Main Loop: {e}")
         time.sleep(1)
