@@ -118,8 +118,8 @@ def controle_differentiel(gauche_raw, droite_raw):
 
 def on_message_callback(topic, msg):
     try:
-        topic_str = topic.decode()
-        msg_str = msg.decode()
+        topic_str = topic.decode() if isinstance(topic, bytes) else topic
+        msg_str = msg.decode() if isinstance(msg, bytes) else msg
         # logging.debug(f"Reçu sur {topic_str}: {msg_str}")
         
         if topic_str.endswith("/cmd"):
