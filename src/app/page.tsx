@@ -129,16 +129,17 @@ function Dashboard() {
 
 
 
-      {/* Emergency Stop (Big Footer Button for quick access? Or stuck to Joystick? Joystick has STOP) */}
-      {/* User asked for "bouton STOP d’urgence (rouge)". Joystick has it. Maybe a big FAB or bottom bar? */}
-      {/* Let's double down on safety. */}
-      <button
-        className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-900/50 text-white font-bold text-xl uppercase tracking-widest flex items-center justify-center gap-3 transition-transform active:scale-95"
-        onClick={() => sendCommand('stop')}
-      >
-        <AlertTriangle />
-        STOP D'URGENCE
-      </button>
+        {/* Emergency Stop (Big Footer Button for quick access? Or stuck to Joystick? Joystick has STOP) */}
+        {/* User asked for "bouton STOP d’urgence (rouge)". Joystick has it. Maybe a big FAB or bottom bar? */}
+        {/* Let's double down on safety. */}
+        <button
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 shadow-lg shadow-red-900/50 text-white font-bold text-xl uppercase tracking-widest flex items-center justify-center gap-3 transition-transform active:scale-95"
+          onClick={() => sendCommand('stop')}
+        >
+          <AlertTriangle />
+          STOP D'URGENCE
+        </button>
+      </div>
     </div>
   );
 }
