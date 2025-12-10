@@ -33,7 +33,7 @@ export default function ConfigPage() {
         e.preventDefault();
         if (nomVoiture.trim()) {
             localStorage.setItem('nomVoiture', nomVoiture.trim());
-            localStorage.setItem('brokerUrl', brokerUrl.trim() || 'wss://mqtt.dev.icam.school:443/mqtt');
+            localStorage.setItem('brokerUrl', 'wss://mqtt.dev.icam.school:443/mqtt');
             router.push('/');
         }
     };
@@ -79,10 +79,10 @@ export default function ConfigPage() {
                         <input
                             id="brokerUrl"
                             type="text"
-                            value={brokerUrl}
-                            onChange={(e) => setBrokerUrl(e.target.value)}
-                            placeholder="wss://mqtt.dev.icam.school/mqtt"
-                            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono text-sm"
+                            value="wss://mqtt.dev.icam.school:443/mqtt"
+                            readOnly
+                            disabled
+                            className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white/50 cursor-not-allowed font-mono text-sm"
                         />
                         <div className="mt-2 text-xs text-white/40">
                             Défaut: <code className="text-blue-300">wss://mqtt.dev.icam.school/mqtt</code>
