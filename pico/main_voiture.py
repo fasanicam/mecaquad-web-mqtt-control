@@ -21,7 +21,7 @@ except ImportError:
 
 # --- Topics MQTT ---
 TOPIC_BASE = f"bzh/iot/voiture/{NOM_VOITURE}"
-TOPIC_CMD = f"{TOPIC_BASE}/cmd"
+TOPIC_WILDCARD = f"{TOPIC_BASE}/+"
 TOPIC_DISTANCE = f"{TOPIC_BASE}/distance"
 TOPIC_STATUS = f"{TOPIC_BASE}/status"
 
@@ -62,6 +62,14 @@ def on_message_callback(topic, msg):
                 voiture.diagonale_arriere_droite()
             else:
                 warn(f"Commande inconnue: {cmd}")
+        
+        elif topic_str.endswith("/vitesse"):
+            try:
+                gaz = int(msg_str.strip())
+                info(f"VITESSE: {gaz}")
+                voiture.definir_vitesse(gaz)
+            except ValueError:
+                error(f"Valeur de vitesse invalide: {msg_str}")
                     
     except Exception as e:
         error(f"Erreur Callback: {e}")
@@ -100,15 +108,15 @@ moteur_c = Moteur(broche_in1=6, broche_in2=5, broche_pwm=7, vitesse=50000)
 moteur_d = Moteur(broche_in1=4, broche_in2=3, broche_pwm=2, vitesse=50000)
 voiture = Voiture(moteur_a, moteur_b, moteur_c, moteur_d)
 
-# Pin definition à vérifier sur votre montage (ex: Pin 16 ou port Grove)
-distance_sensor = GroveUltrasonicRanger(16)
+# Pin definition à vérifier sur votre montage (ex: Pin 1 ou port Grove)
+distance_sensor = GroveUltrasonicRanger(1)
 
 # Init Client MQTT
 client_mqtt = ClientMQTT(
     broker=SERVER_BROKER,
     port=PORT_BROKER,
     client_id=f"pico_{NOM_VOITURE}",
-    topic_cmd=TOPIC_CMD,
+    topic_cmd=TOPIC_WILDCARD,
     callback=on_message_callback
 )
 
