@@ -5,19 +5,12 @@ import time
 enable_logging_types(LOG_DEBUG)
 
 # --- Configuration du Projet ---
-# Tentative d'import depuis secrets.py, sinon valeurs par defaut
-try:
-    from secrets import ssid as WIFI_SSID, password as WIFI_PWD, mqtt_broker as SERVER_BROKER, mqtt_port as PORT_BROKER
-    try:
-        from secrets import nom_voiture as NOM_VOITURE
-    except ImportError:
-        NOM_VOITURE = "maVoiture"
-except ImportError:
-    WIFI_SSID = "icam_iot"
-    WIFI_PWD = "Summ3#C@mp2022"
-    SERVER_BROKER = "mqtt.dev.icam.school"
-    PORT_BROKER = 1883
-    NOM_VOITURE = "maVoiture"
+# Valeurs par défaut codées en dur
+WIFI_SSID = "icam_iot"
+WIFI_PWD = "Summ3#C@mp2022"
+SERVER_BROKER = "mqtt.dev.icam.school"
+PORT_BROKER = 1883
+NOM_VOITURE = "maVoiture"
 
 # --- Topics MQTT ---
 TOPIC_BASE = f"bzh/iot/voiture/{NOM_VOITURE}"
@@ -26,7 +19,6 @@ TOPIC_DISTANCE = f"{TOPIC_BASE}/distance"
 TOPIC_STATUS = f"{TOPIC_BASE}/status"
 
 client_mqtt = None
-
 
 
 def on_message_callback(topic, msg):
@@ -73,9 +65,6 @@ def on_message_callback(topic, msg):
                     
     except Exception as e:
         error(f"Erreur Callback: {e}")
-
- 
-
 
 
 
